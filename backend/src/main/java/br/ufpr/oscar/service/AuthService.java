@@ -13,6 +13,9 @@ import java.util.Random;
 @Service
 public class AuthService {
 
+    private static final int TOKEN_MIN = 0;
+    private static final int TOKEN_MAX = 100;
+
     private final UsuarioRepository usuarioRepo;
     private final SessaoRepository  sessaoRepo;
     private final Random random = new Random();
@@ -28,7 +31,7 @@ public class AuthService {
         if (opt.isEmpty()) return -1;
 
         Usuario usuario = opt.get();
-        int token = random.nextInt(101); 
+        int token = gerarTokenUnico();
 
         Sessao sessao = sessaoRepo.findByUsuario(usuario)
                 .orElse(new Sessao(usuario, token));
@@ -36,5 +39,18 @@ public class AuthService {
         sessaoRepo.save(sessao);
 
         return token;
+    }
+
+    private int gerarTokenUnico() {
+        int totalTokens = TOKEN_MAX - TOKEN_MIN + 1;
+
+        for (int tentativa = 0; tentativa < totalTokens; tentativa++) {
+            int token = random.nextInt(totalTokens) + TOKEN_MIN;
+            if (sessaoRepo.findByToken(token).isEmpty()) {
+                return token;
+            }
+        }
+
+        throw new IllegalStateException("Nao ha tokens disponiveis para nova sessao.");
     }
 }

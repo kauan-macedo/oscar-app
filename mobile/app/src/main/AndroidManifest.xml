@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,7 +14,25 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Oscar">
         <activity
+            android:name=".ui.FilmeDetalheActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.FilmesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.DiretoresActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.VotarDiretorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BoasVindasActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -38,8 +38,9 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val resposta = RetrofitCentral.instance.autenticar(LoginRequest(login, senha))
 
-                if (resposta.isSuccessful && resposta.body()?.sucesso == true) {
-                    val body = resposta.body()!!
+                val body = resposta.body()
+
+                if (resposta.isSuccessful && body?.sucesso == true && body.token != null) {
 
                     SessionManager.loginUsuario = login
                     SessionManager.token = body.token
