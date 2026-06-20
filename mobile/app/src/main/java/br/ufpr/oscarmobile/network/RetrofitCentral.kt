@@ -1,4 +1,4 @@
-package com.seugrupo.oscarapp.network
+package com.ufpr.oscarmobile.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
