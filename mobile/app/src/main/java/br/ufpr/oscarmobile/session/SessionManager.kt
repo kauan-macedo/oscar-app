@@ -1,7 +1,7 @@
-package com.ufpr.oscarmobile.session
+package br.ufpr.oscarmobile.session
 
-import com.ufpr.oscarmobile.model.Diretor
-import com.ufpr.oscarmobile.model.Filme
+import br.ufpr.oscarmobile.model.Diretor
+import br.ufpr.oscarmobile.model.Filme
 
 object SessionManager {
 

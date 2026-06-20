@@ -9,6 +9,10 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import br.ufpr.oscarmobile.R
+import br.ufpr.oscarmobile.model.Diretor
+import br.ufpr.oscarmobile.network.RetrofitJsonExterno
+import br.ufpr.oscarmobile.session.SessionManager
 import kotlinx.coroutines.launch
 
 class VotarDiretorActivity : AppCompatActivity() {
@@ -39,7 +43,7 @@ class VotarDiretorActivity : AppCompatActivity() {
                 val diretorSelecionado = listaDiretores.find { it.id.toInt() == checkedId }
 
                 if (diretorSelecionado != null) {
-                    AppSession.diretorSelecionado = diretorSelecionado
+                    SessionManager.diretorVotado = diretorSelecionado
                     
                     Toast.makeText(this, "Voto em ${diretorSelecionado.nome} salvo!", Toast.LENGTH_SHORT).show()
                     finish() 
@@ -54,11 +58,14 @@ class VotarDiretorActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // Chame o seu cliente Retrofit configurado para a API externa na Issue 1
-                val response = RetrofitClientExternal.diretorService.getDiretores()
-                listaDiretores = response
-                
-                popularRadioGroup(listaDiretores)
+                val resposta = RetrofitJsonExterno.instance.getDiretores()
+
+                if (resposta.isSuccessful && !resposta.body().isNullOrEmpty()) {
+                    listaDiretores = resposta.body()!!
+                    popularRadioGroup(listaDiretores)
+                } else {
+                    Toast.makeText(this@VotarDiretorActivity, "Nenhum diretor encontrado.", Toast.LENGTH_LONG).show()
+                }
                 
             } catch (e: Exception) {
                 Toast.makeText(this@VotarDiretorActivity, "Erro ao carregar diretores.", Toast.LENGTH_LONG).show()
@@ -77,14 +84,14 @@ class VotarDiretorActivity : AppCompatActivity() {
                 // O id do RadioButton vira o ID numérico do diretor
                 id = diretor.id.toInt() 
                 text = diretor.nome
-                textSize = 18sp
+                textSize = 18f
                 setPadding(16, 16, 16, 16)
             }
             
             radioGroupDiretores.addView(radioButton)
         }
 
-        AppSession.diretorSelecionado?.let { diretorSalvo ->
+        SessionManager.diretorVotado?.let { diretorSalvo ->
             radioGroupDiretores.check(diretorSalvo.id.toInt())
         }
     }

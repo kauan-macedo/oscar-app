@@ -1,7 +1,7 @@
-package com.ufpr.oscarmobile.network
+package br.ufpr.oscarmobile.network
 
-import com.ufpr.oscarmobile.model.Diretor
-import com.ufpr.oscarmobile.model.Filme
+import br.ufpr.oscarmobile.model.Diretor
+import br.ufpr.oscarmobile.model.Filme
 import retrofit2.Response
 import retrofit2.http.GET
 

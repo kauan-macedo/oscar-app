@@ -3,6 +3,7 @@ package br.ufpr.oscarmobile.ui
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import br.ufpr.oscarmobile.R
 import br.ufpr.oscarmobile.databinding.ActivityFilmeDetalheBinding
 import br.ufpr.oscarmobile.model.Filme
 import br.ufpr.oscarmobile.session.SessionManager

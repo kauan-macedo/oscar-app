@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import br.ufpr.oscarmobile.R
 import br.ufpr.oscarmobile.model.Diretor
-import br.ufpr.oscarmobile.network.RetrofixJsonExterno
+import br.ufpr.oscarmobile.network.RetrofitJsonExterno
 import br.ufpr.oscarmobile.session.SessionManager
 import kotlinx.coroutines.launch
 
@@ -42,7 +42,7 @@ class DiretoresActivity : AppCompatActivity() {
                 val selecionado = listaDiretores.find { it.id.toInt() == checkedId }
                 
                 if (selecionado != null) {
-                    SessionManager.diretorSelecionado = selecionado
+                    SessionManager.diretorVotado = selecionado
                     
                     Toast.makeText(this, "Escolha (${selecionado.nome}) gravada localmente!", Toast.LENGTH_SHORT).show()
                     finish() // Retorna à BoasVindasActivity
@@ -57,10 +57,14 @@ class DiretoresActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val dados = RetrofixJsonExterno.apiService.getDiretores()
-                listaDiretores = dados
-                
-                renderizarDiretores(listaDiretores)
+                val resposta = RetrofitJsonExterno.instance.getDiretores()
+
+                if (resposta.isSuccessful && !resposta.body().isNullOrEmpty()) {
+                    listaDiretores = resposta.body()!!
+                    renderizarDiretores(listaDiretores)
+                } else {
+                    Toast.makeText(this@DiretoresActivity, "Nenhum diretor encontrado.", Toast.LENGTH_LONG).show()
+                }
                 
             } catch (e: Exception) {
                 Toast.makeText(this@DiretoresActivity, "Falha ao carregar diretores.", Toast.LENGTH_LONG).show()
@@ -84,7 +88,7 @@ class DiretoresActivity : AppCompatActivity() {
             radioGroupDiretores.addView(rb)
         }
 
-        SessionManager.diretorSelecionado?.let { anterior ->
+        SessionManager.diretorVotado?.let { anterior ->
             radioGroupDiretores.check(anterior.id.toInt())
         }
     }

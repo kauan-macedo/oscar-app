@@ -1,9 +1,9 @@
-package com.ufpr.oscarmobile.network
+package br.ufpr.oscarmobile.network
 
-import com.seugrupo.oscarapp.model.ApiResponse
-import com.seugrupo.oscarapp.model.LoginRequest
-import com.seugrupo.oscarapp.model.LoginResponse
-import com.seugrupo.oscarapp.model.VotoRequest
+import br.ufpr.oscarmobile.model.ApiResponse
+import br.ufpr.oscarmobile.model.LoginRequest
+import br.ufpr.oscarmobile.model.LoginResponse
+import br.ufpr.oscarmobile.model.VotoRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
