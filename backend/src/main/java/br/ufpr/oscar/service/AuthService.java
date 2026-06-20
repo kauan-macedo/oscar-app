@@ -51,6 +51,6 @@ public class AuthService {
             }
         }
 
-        throw new IllegalStateException("Nao ha tokens disponiveis para nova sessao.");
+        throw new IllegalStateException("Não há tokens disponíveis para nova sessão.");
     }
 }

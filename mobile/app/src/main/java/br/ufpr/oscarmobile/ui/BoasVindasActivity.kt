@@ -59,14 +59,21 @@ class BoasVindasActivity : AppCompatActivity() {
             return
         }
 
+        val filmeId = filme.id.toLongOrNull()
+        val diretorId = diretor.id.toLongOrNull()
+
+        if (filmeId == null || diretorId == null) {
+            Toast.makeText(this, "Voto inválido. Escolha filme e diretor novamente.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         lifecycleScope.launch {
             try {
                 val resposta = RetrofitCentral.instance.registrarVoto(
                     VotoRequest(
-                        login = SessionManager.loginUsuario,
                         token = SessionManager.token,
-                        idFilme = filme.id,
-                        idDiretor = diretor.id
+                        filmeId = filmeId,
+                        diretorId = diretorId
                     )
                 )
 
@@ -74,7 +81,7 @@ class BoasVindasActivity : AppCompatActivity() {
                     SessionManager.votoConfirmado = true
                     Toast.makeText(this@BoasVindasActivity, "Voto confirmado.", Toast.LENGTH_SHORT).show()
                 } else {
-                    val mensagem = resposta.body()?.mensagem ?: "Nao foi possivel confirmar o voto."
+                    val mensagem = resposta.body()?.mensagem ?: "Não foi possível confirmar o voto."
                     Toast.makeText(this@BoasVindasActivity, mensagem, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {

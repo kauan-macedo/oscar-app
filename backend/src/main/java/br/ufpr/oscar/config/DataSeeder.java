@@ -46,22 +46,20 @@ public class DataSeeder implements CommandLineRunner {
     private void seedFilmes() {
         if (filmeRepo.count() > 0) return;
 
-        // Ajuste para bater com o filme.json real em 200.236.3.97
         filmeRepo.save(new Filme(1L,  "Piratas do Caribe", "Aventura",
-                "http://200.236.3.97/imagens/piratas.jpeg"));
-        filmeRepo.save(new Filme(10L, "La La Land",        "Musical",
-                "http://200.236.3.97/imagens/land.jpeg"));
-        // Adicione os demais filmes do JSON aqui
+                "http://200.236.3.97/imagens/piratas.png"));
+        filmeRepo.save(new Filme(3L, "La La Land", "Musical",
+                "http://200.236.3.97/imagens/lalaland.png"));
     }
 
 
     private void seedDiretores() {
         if (diretorRepo.count() > 0) return;
 
-        // Ajuste para bater com o diretor.json real em 200.236.3.97
-        diretorRepo.save(new Diretor(1L,  "James Cameron"));
-        diretorRepo.save(new Diretor(15L, "Steven Spielberg"));
-        // Adicione os demais diretores do JSON aqui
+        diretorRepo.save(new Diretor(1L, "James Cameron"));
+        diretorRepo.save(new Diretor(2L, "Alfred Hitchcoc"));
+        diretorRepo.save(new Diretor(3L, "Tim Burton"));
+        diretorRepo.save(new Diretor(4L, "Steven Spielberg"));
     }
 
 

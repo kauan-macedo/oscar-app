@@ -8,8 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitCentral {
 
-    // ATUALIZAR PARA O ENDEREÇO CERTO DEPOIS!!!!!!
-    private const val BASE_URL = "http://IP_AQUI:PORTA/"
+    private const val BASE_URL = "http://10.0.2.2:8080/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

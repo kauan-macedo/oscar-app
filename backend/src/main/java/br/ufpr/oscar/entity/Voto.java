@@ -2,6 +2,8 @@ package br.ufpr.oscar.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
     name = "votos",
@@ -25,6 +27,9 @@ public class Voto {
     @JoinColumn(name = "diretor_id", nullable = false)
     private Diretor diretor;
 
+    @Column(name = "registrado_em", nullable = false)
+    private LocalDateTime registradoEm;
+
     public Voto() {}
 
     public Voto(Usuario usuario, Filme filme, Diretor diretor) {
@@ -33,8 +38,16 @@ public class Voto {
         this.diretor = diretor;
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (registradoEm == null) {
+            registradoEm = LocalDateTime.now();
+        }
+    }
+
     public Long getId()         { return id; }
     public Usuario getUsuario() { return usuario; }
     public Filme getFilme()     { return filme; }
     public Diretor getDiretor() { return diretor; }
+    public LocalDateTime getRegistradoEm() { return registradoEm; }
 }
