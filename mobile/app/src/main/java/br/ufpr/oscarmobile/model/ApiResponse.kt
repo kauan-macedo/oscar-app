@@ -1,4 +1,4 @@
-package com.seugrupo.oscarmobile.model
+package com.ufpr.oscarmobile.model
  
 import com.google.gson.annotations.SerializedName
  
