@@ -29,7 +29,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvStatusVoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voto confirmado. As escolhas estão bloqueadas."
+        android:textColor="#2E7D32"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/btnVotarFilme"

@@ -28,11 +28,20 @@ class FilmeDetalheActivity : AppCompatActivity() {
 
         exibirDetalhe(filme)
 
+        if (SessionManager.votoConfirmado) {
+            binding.btnVotar.isEnabled = false
+            binding.btnVotar.text = "Voto confirmado"
+        }
+
         binding.btnVotar.setOnClickListener {
-            // Salva localmente na sessão — sem enviar ao servidor
+            if (SessionManager.votoConfirmado) {
+                Toast.makeText(this, "Voto já confirmado. As escolhas não podem ser alteradas.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             SessionManager.filmeVotado = filme
             Toast.makeText(this, "Voto em \"${filme.nome}\" registrado!", Toast.LENGTH_SHORT).show()
-            finish()   // volta para a lista
+            finish()
         }
     }
 

@@ -34,10 +34,14 @@ class VotarDiretorActivity : AppCompatActivity() {
         carregarDiretores()
 
         btnConfirmar.setOnClickListener {
+            if (SessionManager.votoConfirmado) {
+                Toast.makeText(this, "Voto já confirmado. As escolhas não podem ser alteradas.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val checkedId = radioGroupDiretores.checkedRadioButtonId
 
             if (checkedId == -1) {
-                // Critério de aceite: Usuário não consegue confirmar sem selecionar
                 Toast.makeText(this, "Por favor, selecione um diretor!", Toast.LENGTH_SHORT).show()
             } else {
                 val diretorSelecionado = listaDiretores.find { it.id.toInt() == checkedId }
@@ -71,20 +75,20 @@ class VotarDiretorActivity : AppCompatActivity() {
                 Toast.makeText(this@VotarDiretorActivity, "Erro ao carregar diretores.", Toast.LENGTH_LONG).show()
             } finally {
                 progressBar.visibility = View.GONE
-                btnConfirmar.isEnabled = true
+                btnConfirmar.isEnabled = !SessionManager.votoConfirmado
             }
         }
     }
 
     private fun popularRadioGroup(diretores: List<Diretor>) {
-        radioGroupDiretores.removeAllViews() // Garante que a view está limpa
+        radioGroupDiretores.removeAllViews()
 
         for (diretor in diretores) {
             val radioButton = RadioButton(this).apply {
-                // O id do RadioButton vira o ID numérico do diretor
                 id = diretor.id.toInt() 
                 text = diretor.nome
                 textSize = 18f
+                isEnabled = !SessionManager.votoConfirmado
                 setPadding(16, 16, 16, 16)
             }
             
@@ -93,6 +97,10 @@ class VotarDiretorActivity : AppCompatActivity() {
 
         SessionManager.diretorVotado?.let { diretorSalvo ->
             radioGroupDiretores.check(diretorSalvo.id.toInt())
+        }
+
+        if (SessionManager.votoConfirmado) {
+            btnConfirmar.text = "Voto confirmado"
         }
     }
 }

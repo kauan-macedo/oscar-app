@@ -34,6 +34,11 @@ class DiretoresActivity : AppCompatActivity() {
         buscarDiretores()
 
         btnSalvarLocal.setOnClickListener {
+            if (SessionManager.votoConfirmado) {
+                Toast.makeText(this, "Voto já confirmado. As escolhas não podem ser alteradas.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val checkedId = radioGroupDiretores.checkedRadioButtonId
 
             if (checkedId == -1) {
@@ -70,7 +75,7 @@ class DiretoresActivity : AppCompatActivity() {
                 Toast.makeText(this@DiretoresActivity, "Falha ao carregar diretores.", Toast.LENGTH_LONG).show()
             } finally {
                 progressBar.visibility = View.GONE
-                btnSalvarLocal.isEnabled = true
+                btnSalvarLocal.isEnabled = !SessionManager.votoConfirmado
             }
         }
     }
@@ -80,9 +85,10 @@ class DiretoresActivity : AppCompatActivity() {
 
         for (diretor in diretores) {
             val rb = RadioButton(this).apply {
-                id = diretor.id.toInt() // Facilita o mapeamento no clique
+                id = diretor.id.toInt()
                 text = diretor.nome
                 textSize = 18f
+                isEnabled = !SessionManager.votoConfirmado
                 setPadding(16, 24, 16, 24)
             }
             radioGroupDiretores.addView(rb)
@@ -90,6 +96,10 @@ class DiretoresActivity : AppCompatActivity() {
 
         SessionManager.diretorVotado?.let { anterior ->
             radioGroupDiretores.check(anterior.id.toInt())
+        }
+
+        if (SessionManager.votoConfirmado) {
+            btnSalvarLocal.text = "Voto confirmado"
         }
     }
 }
