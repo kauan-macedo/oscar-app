@@ -1,11 +1,13 @@
 package br.ufpr.oscarmobile.ui
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,8 +22,11 @@ class DiretoresActivity : AppCompatActivity() {
     private lateinit var radioGroupDiretores: RadioGroup
     private lateinit var progressBar: ProgressBar
     private lateinit var btnSalvarLocal: Button
+    private lateinit var tvMensagem: TextView
     
     private var listaDiretores: List<Diretor> = emptyList()
+    private val diretoresPorViewId = mutableMapOf<Int, Diretor>()
+    private val viewIdPorDiretorId = mutableMapOf<String, Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,7 @@ class DiretoresActivity : AppCompatActivity() {
         radioGroupDiretores = findViewById(R.id.radioGroupDiretores)
         progressBar = findViewById(R.id.progressBarDiretor)
         btnSalvarLocal = findViewById(R.id.btnSalvarDiretorLocal)
+        tvMensagem = findViewById(R.id.tvMensagemDiretores)
 
         buscarDiretores()
 
@@ -44,7 +50,7 @@ class DiretoresActivity : AppCompatActivity() {
             if (checkedId == -1) {
                 Toast.makeText(this, "Selecione um diretor para votar!", Toast.LENGTH_SHORT).show()
             } else {
-                val selecionado = listaDiretores.find { it.id.toInt() == checkedId }
+                val selecionado = diretoresPorViewId[checkedId]
                 
                 if (selecionado != null) {
                     SessionManager.diretorVotado = selecionado
@@ -68,27 +74,36 @@ class DiretoresActivity : AppCompatActivity() {
                     listaDiretores = resposta.body()!!
                     renderizarDiretores(listaDiretores)
                 } else {
-                    Toast.makeText(this@DiretoresActivity, "Nenhum diretor encontrado.", Toast.LENGTH_LONG).show()
+                    mostrarMensagem("Nenhum diretor foi retornado pelo servidor.")
                 }
                 
             } catch (e: Exception) {
-                Toast.makeText(this@DiretoresActivity, "Falha ao carregar diretores.", Toast.LENGTH_LONG).show()
+                mostrarMensagem("Falha ao carregar diretores. Verifique a conexão.")
             } finally {
                 progressBar.visibility = View.GONE
-                btnSalvarLocal.isEnabled = !SessionManager.votoConfirmado
+                btnSalvarLocal.isEnabled = !SessionManager.votoConfirmado && listaDiretores.isNotEmpty()
             }
         }
     }
 
     private fun renderizarDiretores(diretores: List<Diretor>) {
         radioGroupDiretores.removeAllViews()
+        diretoresPorViewId.clear()
+        viewIdPorDiretorId.clear()
+        tvMensagem.visibility = View.GONE
 
         // A lista vem do JSON externo, entao a quantidade de RadioButtons e dinamica.
         for (diretor in diretores) {
+            val viewId = View.generateViewId()
+            diretoresPorViewId[viewId] = diretor
+            viewIdPorDiretorId[diretor.id] = viewId
+
             val rb = RadioButton(this).apply {
-                id = diretor.id.toInt()
+                id = viewId
                 text = diretor.nome
                 textSize = 18f
+                maxLines = 3
+                ellipsize = TextUtils.TruncateAt.END
                 isEnabled = !SessionManager.votoConfirmado
                 setPadding(16, 24, 16, 24)
             }
@@ -96,11 +111,21 @@ class DiretoresActivity : AppCompatActivity() {
         }
 
         SessionManager.diretorVotado?.let { anterior ->
-            radioGroupDiretores.check(anterior.id.toInt())
+            viewIdPorDiretorId[anterior.id]?.let { radioGroupDiretores.check(it) }
         }
 
         if (SessionManager.votoConfirmado) {
             btnSalvarLocal.text = "Voto confirmado"
         }
+    }
+
+    private fun mostrarMensagem(mensagem: String) {
+        listaDiretores = emptyList()
+        radioGroupDiretores.removeAllViews()
+        diretoresPorViewId.clear()
+        viewIdPorDiretorId.clear()
+        tvMensagem.text = mensagem
+        tvMensagem.visibility = View.VISIBLE
+        Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show()
     }
 }

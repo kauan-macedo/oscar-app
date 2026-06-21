@@ -21,6 +21,15 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/tvMensagemDiretores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="#B00020"
+        android:visibility="gone" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"

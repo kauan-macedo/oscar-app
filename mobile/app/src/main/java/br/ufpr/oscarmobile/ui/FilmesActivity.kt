@@ -26,7 +26,8 @@ class FilmesActivity : AppCompatActivity() {
 
     private fun carregarFilmes() {
         binding.progressBar.visibility = View.VISIBLE
-        binding.tvErro.visibility      = View.GONE
+        binding.tvErro.visibility = View.GONE
+        binding.rvFilmes.visibility = View.GONE
 
         lifecycleScope.launch {
             try {
@@ -34,22 +35,22 @@ class FilmesActivity : AppCompatActivity() {
 
                 if (resposta.isSuccessful && !resposta.body().isNullOrEmpty()) {
                     val filmes = resposta.body()!!
+                    binding.rvFilmes.visibility = View.VISIBLE
                     binding.rvFilmes.adapter = FilmeAdapter(filmes) { filme ->
-                        // O voto ainda e local, o envio ao servidor acontece na confirmacao.
+                        // O voto ainda fica local; o envio ao servidor acontece na confirmação.
                         val intent = Intent(this@FilmesActivity, FilmeDetalheActivity::class.java).apply {
-                            putExtra("id",     filme.id)
-                            putExtra("nome",   filme.nome)
+                            putExtra("id", filme.id)
+                            putExtra("nome", filme.nome)
                             putExtra("genero", filme.genero)
-                            putExtra("foto",   filme.foto)
+                            putExtra("foto", filme.foto)
                         }
                         startActivity(intent)
                     }
                 } else {
-                    mostrarErro("Nenhum filme encontrado.")
+                    mostrarErro("Nenhum filme foi retornado pelo servidor. Tente novamente mais tarde.")
                 }
-
             } catch (e: Exception) {
-                mostrarErro("Erro ao carregar filmes. Verifique a conexão.")
+                mostrarErro("Não foi possível carregar os filmes. Verifique a conexão do emulador e tente novamente.")
             } finally {
                 binding.progressBar.visibility = View.GONE
             }
@@ -57,7 +58,8 @@ class FilmesActivity : AppCompatActivity() {
     }
 
     private fun mostrarErro(msg: String) {
-        binding.tvErro.text       = msg
+        binding.tvErro.text = msg
         binding.tvErro.visibility = View.VISIBLE
+        binding.rvFilmes.visibility = View.GONE
     }
 }

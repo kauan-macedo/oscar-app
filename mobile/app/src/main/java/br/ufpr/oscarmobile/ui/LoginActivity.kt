@@ -37,11 +37,9 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val resposta = RetrofitCentral.instance.autenticar(LoginRequest(login, senha))
-
                 val body = resposta.body()
 
                 if (resposta.isSuccessful && body?.sucesso == true && body.token != null) {
-
                     SessionManager.loginUsuario = login
                     SessionManager.token = body.token
                     SessionManager.filmeVotado = body.filme
@@ -50,12 +48,10 @@ class LoginActivity : AppCompatActivity() {
 
                     startActivity(Intent(this@LoginActivity, BoasVindasActivity::class.java))
                     finish()
-
                 } else {
                     val mensagem = resposta.body()?.mensagem ?: "Usuário ou senha incorretos."
                     mostrarErro(mensagem)
                 }
-
             } catch (e: Exception) {
                 mostrarErro("Erro de conexão. Verifique a rede.")
             } finally {

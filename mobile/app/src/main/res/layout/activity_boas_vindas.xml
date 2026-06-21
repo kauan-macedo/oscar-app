@@ -1,71 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="32dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/ivTrofeu"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:src="@drawable/oscar_trofeu"
-        android:contentDescription="Troféu Oscar"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        android:id="@+id/tvBemVindo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bem-vindo!"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/tvToken"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/tvStatusVoto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Voto confirmado. As escolhas estão bloqueadas."
-        android:textColor="#2E7D32"
         android:gravity="center"
-        android:visibility="gone"
-        android:layout_marginBottom="16dp" />
+        android:minHeight="620dp"
+        android:orientation="vertical"
+        android:padding="32dp">
 
-    <Button
-        android:id="@+id/btnVotarFilme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Votar Filme"
-        android:layout_marginBottom="8dp" />
+        <ImageView
+            android:id="@+id/ivTrofeu"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="Troféu Oscar"
+            android:src="@drawable/oscar_trofeu" />
 
-    <Button
-        android:id="@+id/btnVotarDiretor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Votar Diretor"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/tvBemVindo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Bem-vindo!"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnConfirmarVoto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Confirmar Voto"
-        android:layout_marginBottom="8dp" />
+        <TextView
+            android:id="@+id/tvToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/btnSair"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sair" />
+        <TextView
+            android:id="@+id/tvStatusVoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="Voto confirmado. As escolhas estão bloqueadas."
+            android:textColor="#2E7D32"
+            android:visibility="gone" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnVotarFilme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Votar Filme" />
+
+        <Button
+            android:id="@+id/btnVotarDiretor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Votar Diretor" />
+
+        <Button
+            android:id="@+id/btnConfirmarVoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Confirmar Voto" />
+
+        <Button
+            android:id="@+id/btnSair"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sair" />
+
+    </LinearLayout>
+</ScrollView>

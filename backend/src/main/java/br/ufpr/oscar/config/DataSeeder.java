@@ -44,15 +44,22 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedUsuarios() {
-        if (usuarioRepo.count() > 0)
-            return;
+        // Usuarios extras deixam a demonstracao segura mesmo apos varios testes.
+        criarUsuarioSeAusente("alice");
+        criarUsuarioSeAusente("bob");
+        criarUsuarioSeAusente("carol");
+        criarUsuarioSeAusente("dave");
+        criarUsuarioSeAusente("eve");
+        criarUsuarioSeAusente("frank");
+        criarUsuarioSeAusente("grace");
+        criarUsuarioSeAusente("heidi");
+        criarUsuarioSeAusente("ivan");
+    }
 
-        // Cinco usuarios para a demonstracao; dave e eve ficam sem voto.
-        usuarioRepo.save(new Usuario("alice", "senha123"));
-        usuarioRepo.save(new Usuario("bob", "senha123"));
-        usuarioRepo.save(new Usuario("carol", "senha123"));
-        usuarioRepo.save(new Usuario("dave", "senha123"));
-        usuarioRepo.save(new Usuario("eve", "senha123"));
+    private void criarUsuarioSeAusente(String login) {
+        if (usuarioRepo.findByLogin(login).isEmpty()) {
+            usuarioRepo.save(new Usuario(login, "senha123"));
+        }
     }
 
     private void seedFilmes() {
