@@ -50,7 +50,7 @@ class DiretoresActivity : AppCompatActivity() {
                     SessionManager.diretorVotado = selecionado
                     
                     Toast.makeText(this, "Escolha (${selecionado.nome}) gravada localmente!", Toast.LENGTH_SHORT).show()
-                    finish() // Retorna à BoasVindasActivity
+                    finish()
                 }
             }
         }
@@ -83,6 +83,7 @@ class DiretoresActivity : AppCompatActivity() {
     private fun renderizarDiretores(diretores: List<Diretor>) {
         radioGroupDiretores.removeAllViews()
 
+        // A lista vem do JSON externo, entao a quantidade de RadioButtons e dinamica.
         for (diretor in diretores) {
             val rb = RadioButton(this).apply {
                 id = diretor.id.toInt()

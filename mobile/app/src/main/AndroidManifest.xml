@@ -26,13 +26,7 @@
             android:name=".ui.DiretoresActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.VotarDiretorActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.BoasVindasActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".ui.LoginActivity"

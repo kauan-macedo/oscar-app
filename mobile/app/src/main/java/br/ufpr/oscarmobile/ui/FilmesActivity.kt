@@ -35,7 +35,7 @@ class FilmesActivity : AppCompatActivity() {
                 if (resposta.isSuccessful && !resposta.body().isNullOrEmpty()) {
                     val filmes = resposta.body()!!
                     binding.rvFilmes.adapter = FilmeAdapter(filmes) { filme ->
-                        // Passa o filme selecionado para a tela de detalhe via Intent
+                        // O voto ainda e local, o envio ao servidor acontece na confirmacao.
                         val intent = Intent(this@FilmesActivity, FilmeDetalheActivity::class.java).apply {
                             putExtra("id",     filme.id)
                             putExtra("nome",   filme.nome)

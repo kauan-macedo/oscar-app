@@ -30,6 +30,7 @@ class BoasVindasActivity : AppCompatActivity() {
         binding.tvToken.text = "Token de votação: ${SessionManager.token}"
 
         val votoConfirmado = SessionManager.votoConfirmado
+        // Depois da confirmacao final, o usuario so pode visualizar as escolhas.
         binding.btnVotarFilme.isEnabled = !votoConfirmado
         binding.btnVotarDiretor.isEnabled = !votoConfirmado
         binding.tvStatusVoto.visibility = if (votoConfirmado) View.VISIBLE else View.GONE

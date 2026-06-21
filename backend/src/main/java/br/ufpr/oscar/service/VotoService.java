@@ -25,9 +25,9 @@ public class VotoService {
     private final DiretorRepository diretorRepo;
 
     public VotoService(SessaoRepository sessaoRepo,
-                       VotoRepository votoRepo,
-                       FilmeRepository filmeRepo,
-                       DiretorRepository diretorRepo) {
+            VotoRepository votoRepo,
+            FilmeRepository filmeRepo,
+            DiretorRepository diretorRepo) {
         this.sessaoRepo = sessaoRepo;
         this.votoRepo = votoRepo;
         this.filmeRepo = filmeRepo;
@@ -43,6 +43,7 @@ public class VotoService {
 
         Usuario usuario = sessao.getUsuario();
 
+        // Cada usuario pode confirmar apenas um voto.
         if (votoRepo.existsByUsuario(usuario)) {
             throw new VotoInvalidoException("Usuário já possui voto registrado.");
         }

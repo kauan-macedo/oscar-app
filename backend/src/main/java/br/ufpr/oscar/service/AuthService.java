@@ -26,9 +26,9 @@ public class AuthService {
     }
 
     @Transactional
-    public int autenticar(String login, String senha) {
+    public Optional<Autenticacao> autenticar(String login, String senha) {
         Optional<Usuario> opt = usuarioRepo.findByLoginAndSenha(login, senha);
-        if (opt.isEmpty()) return -1;
+        if (opt.isEmpty()) return Optional.empty();
 
         Usuario usuario = opt.get();
         int token = gerarTokenUnico();
@@ -38,12 +38,15 @@ public class AuthService {
         sessao.setToken(token);
         sessaoRepo.save(sessao);
 
-        return token;
+        return Optional.of(new Autenticacao(usuario, token));
     }
+
+    public record Autenticacao(Usuario usuario, int token) {}
 
     private int gerarTokenUnico() {
         int totalTokens = TOKEN_MAX - TOKEN_MIN + 1;
 
+        // O token fica vinculado a uma sessao e precisa ser unico no momento do login.
         for (int tentativa = 0; tentativa < totalTokens; tentativa++) {
             int token = random.nextInt(totalTokens) + TOKEN_MIN;
             if (sessaoRepo.findByToken(token).isEmpty()) {

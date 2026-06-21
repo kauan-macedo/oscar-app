@@ -27,6 +27,12 @@ public class Filme {
         this.foto = foto;
     }
 
+    public void atualizar(String nome, String genero, String foto) {
+        this.nome = nome;
+        this.genero = genero;
+        this.foto = foto;
+    }
+
     public Long getId()     { return id; }
     public String getNome() { return nome; }
     public String getGenero() { return genero; }

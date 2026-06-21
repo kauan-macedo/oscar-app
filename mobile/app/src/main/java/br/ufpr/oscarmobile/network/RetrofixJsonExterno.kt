@@ -8,6 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitJsonExterno {
 
+    // Servidor para filmes, diretores e imagens.
     private const val BASE_URL = "http://200.236.3.97/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

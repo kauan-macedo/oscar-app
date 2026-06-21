@@ -44,6 +44,9 @@ class LoginActivity : AppCompatActivity() {
 
                     SessionManager.loginUsuario = login
                     SessionManager.token = body.token
+                    SessionManager.filmeVotado = body.filme
+                    SessionManager.diretorVotado = body.diretor
+                    SessionManager.votoConfirmado = body.votoConfirmado
 
                     startActivity(Intent(this@LoginActivity, BoasVindasActivity::class.java))
                     finish()

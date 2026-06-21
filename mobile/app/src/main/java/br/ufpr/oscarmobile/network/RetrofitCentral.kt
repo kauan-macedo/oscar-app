@@ -8,10 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitCentral {
 
+    // 10.0.2.2 aponta para o localhost da maquina.
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.BASIC
     }
 
     private val httpClient = OkHttpClient.Builder()

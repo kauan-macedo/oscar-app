@@ -3,24 +3,36 @@ package br.ufpr.oscar.config;
 import br.ufpr.oscar.entity.*;
 import br.ufpr.oscar.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
 
+    private static final String FILMES_URL = "http://200.236.3.97/filme.json";
+    private static final String DIRETORES_URL = "http://200.236.3.97/diretor.json";
+
     private final UsuarioRepository usuarioRepo;
-    private final SessaoRepository  sessaoRepo;
-    private final FilmeRepository   filmeRepo;
+    private final SessaoRepository sessaoRepo;
+    private final FilmeRepository filmeRepo;
     private final DiretorRepository diretorRepo;
-    private final VotoRepository    votoRepo;
+    private final VotoRepository votoRepo;
+    private final RestTemplate restTemplate = criarRestTemplate();
 
     public DataSeeder(UsuarioRepository u, SessaoRepository s,
-                      FilmeRepository f, DiretorRepository d, VotoRepository v) {
+            FilmeRepository f, DiretorRepository d, VotoRepository v) {
         this.usuarioRepo = u;
-        this.sessaoRepo  = s;
-        this.filmeRepo   = f;
+        this.sessaoRepo = s;
+        this.filmeRepo = f;
         this.diretorRepo = d;
-        this.votoRepo    = v;
+        this.votoRepo = v;
     }
 
     @Override
@@ -31,43 +43,47 @@ public class DataSeeder implements CommandLineRunner {
         seedVotoConfirmado();
     }
 
-
     private void seedUsuarios() {
-        if (usuarioRepo.count() > 0) return;   // evita duplicar se ddl-auto=update
+        if (usuarioRepo.count() > 0)
+            return;
 
-        usuarioRepo.save(new Usuario("alice", "senha123"));   // terá voto confirmado
-        usuarioRepo.save(new Usuario("bob",   "senha123"));   // sem voto
-        usuarioRepo.save(new Usuario("carol", "senha123"));   // sem voto
-        usuarioRepo.save(new Usuario("dave",  "senha123"));   // nunca usado
-        usuarioRepo.save(new Usuario("eve",   "senha123"));   // nunca usado
+        // Cinco usuarios para a demonstracao; dave e eve ficam sem voto.
+        usuarioRepo.save(new Usuario("alice", "senha123"));
+        usuarioRepo.save(new Usuario("bob", "senha123"));
+        usuarioRepo.save(new Usuario("carol", "senha123"));
+        usuarioRepo.save(new Usuario("dave", "senha123"));
+        usuarioRepo.save(new Usuario("eve", "senha123"));
     }
-
 
     private void seedFilmes() {
-        if (filmeRepo.count() > 0) return;
-
-        filmeRepo.save(new Filme(1L,  "Piratas do Caribe", "Aventura",
-                "http://200.236.3.97/imagens/piratas.png"));
-        filmeRepo.save(new Filme(3L, "La La Land", "Musical",
-                "http://200.236.3.97/imagens/lalaland.png"));
+        // O enunciado pede que filmes venham do JSON externo da Academia.
+        carregarFilmes().forEach(item -> {
+            Long id = parseId(item.id, "filme");
+            Filme filme = filmeRepo.findById(id)
+                    .orElseGet(() -> new Filme(id, item.nome, item.genero, item.foto));
+            filme.atualizar(item.nome, item.genero, item.foto);
+            filmeRepo.save(filme);
+        });
     }
-
 
     private void seedDiretores() {
-        if (diretorRepo.count() > 0) return;
-
-        diretorRepo.save(new Diretor(1L, "James Cameron"));
-        diretorRepo.save(new Diretor(2L, "Alfred Hitchcoc"));
-        diretorRepo.save(new Diretor(3L, "Tim Burton"));
-        diretorRepo.save(new Diretor(4L, "Steven Spielberg"));
+        // Mantem o banco alinhado ao arquivo diretor.json.
+        carregarDiretores().forEach(item -> {
+            Long id = parseId(item.id, "diretor");
+            Diretor diretor = diretorRepo.findById(id)
+                    .orElseGet(() -> new Diretor(id, item.nome));
+            diretor.atualizar(item.nome);
+            diretorRepo.save(diretor);
+        });
     }
 
-
     private void seedVotoConfirmado() {
-        if (votoRepo.count() > 0) return;
+        if (votoRepo.count() > 0)
+            return;
 
-        Usuario alice   = usuarioRepo.findByLogin("alice").orElseThrow();
-        Filme   filme   = filmeRepo.findById(1L).orElseThrow();
+        // Usuario com voto previo para demonstrar a regra de bloqueio.
+        Usuario alice = usuarioRepo.findByLogin("alice").orElseThrow();
+        Filme filme = filmeRepo.findById(1L).orElseThrow();
         Diretor diretor = diretorRepo.findById(1L).orElseThrow();
 
         if (sessaoRepo.findByUsuario(alice).isEmpty()) {
@@ -75,5 +91,81 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         votoRepo.save(new Voto(alice, filme, diretor));
+    }
+
+    private List<FilmeJson> carregarFilmes() {
+        FilmeJson[] itens = carregar(FILMES_URL, FilmeJson[].class);
+        List<FilmeJson> filmes = Arrays.stream(validarItens(itens, "filmes"))
+                .filter(Objects::nonNull)
+                .filter(item -> item.id != null && item.nome != null && item.genero != null && item.foto != null)
+                .toList();
+
+        if (filmes.isEmpty()) {
+            throw new IllegalStateException("JSON externo de filmes não retornou itens válidos.");
+        }
+
+        return filmes;
+    }
+
+    private List<DiretorJson> carregarDiretores() {
+        DiretorJson[] itens = carregar(DIRETORES_URL, DiretorJson[].class);
+        List<DiretorJson> diretores = Arrays.stream(validarItens(itens, "diretores"))
+                .filter(Objects::nonNull)
+                .filter(item -> item.id != null && item.nome != null)
+                .toList();
+
+        if (diretores.isEmpty()) {
+            throw new IllegalStateException("JSON externo de diretores não retornou itens válidos.");
+        }
+
+        return diretores;
+    }
+
+    private <T> T carregar(String url, Class<T> tipo) {
+        try {
+            return restTemplate.getForObject(url, tipo);
+        } catch (RestClientException e) {
+            throw new IllegalStateException("Falha ao carregar JSON externo: " + url, e);
+        }
+    }
+
+    private <T> T[] validarItens(T[] itens, String recurso) {
+        if (itens == null || itens.length == 0) {
+            throw new IllegalStateException("JSON externo de " + recurso + " está vazio.");
+        }
+        return itens;
+    }
+
+    private RestTemplate criarRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(3));
+        factory.setReadTimeout(Duration.ofSeconds(3));
+        return new RestTemplate(factory);
+    }
+
+    private Long parseId(String valor, String recurso) {
+        try {
+            return Long.parseLong(valor.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException("ID de " + recurso + " inválido no JSON externo: " + valor, e);
+        }
+    }
+
+    private static class FilmeJson {
+        public String id;
+        public String nome;
+        public String genero;
+        public String foto;
+
+        public FilmeJson() {
+        }
+    }
+
+    private static class DiretorJson {
+        public String id;
+        public String nome;
+
+        public DiretorJson() {
+        }
     }
 }

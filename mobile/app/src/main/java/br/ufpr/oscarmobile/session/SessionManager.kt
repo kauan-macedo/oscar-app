@@ -9,6 +9,7 @@ object SessionManager {
     var loginUsuario: String = ""
     var token: Int = -1
 
+    // Escolhas mantidas apenas na sessao ate o envio definitivo pelo REST.
     var filmeVotado: Filme? = null
     var diretorVotado: Diretor? = null
 

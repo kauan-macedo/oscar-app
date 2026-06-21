@@ -59,6 +59,7 @@ class ConfirmarVotoActivity : AppCompatActivity() {
     }
 
     private fun enviarVoto() {
+        // Filme e diretor ficam locais ate o usuario confirmar o token nesta tela.
         val filme = SessionManager.filmeVotado
         val diretor = SessionManager.diretorVotado
 

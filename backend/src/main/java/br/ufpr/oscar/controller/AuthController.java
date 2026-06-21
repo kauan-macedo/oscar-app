@@ -2,39 +2,32 @@ package br.ufpr.oscar.controller;
 
 import br.ufpr.oscar.dto.LoginRequest;
 import br.ufpr.oscar.dto.LoginResponse;
+import br.ufpr.oscar.entity.Voto;
+import br.ufpr.oscar.repository.VotoRepository;
 import br.ufpr.oscar.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
 public class AuthController {
 
     private final AuthService authService;
+    private final VotoRepository votoRepository;
 
-    public AuthController(AuthService a) {
+    public AuthController(AuthService a, VotoRepository votoRepository) {
         this.authService = a;
+        this.votoRepository = votoRepository;
     }
 
-    /**
-     * POST /login
-     *
-     * Request:
-     *   { "login": "alice", "senha": "senha123" }
-     *
-     * Response 200:
-     *   { "sucesso": true, "mensagem": "Login realizado com sucesso.", "token": 42 }
-     *
-     * Response 401:
-     *   { "sucesso": false, "mensagem": "Usuário ou senha incorretos.", "token": null }
-     *
-     * Response 400:
-     *   { "sucesso": false, "mensagem": "Login e senha são obrigatórios.", "token": null }
-     */
     @PostMapping
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
 
-        // 400 — campos ausentes ou em branco
         if (request.getLogin() == null || request.getLogin().isBlank() ||
             request.getSenha() == null || request.getSenha().isBlank()) {
 
@@ -42,16 +35,24 @@ public class AuthController {
                     .body(new LoginResponse(false, "Login e senha são obrigatórios.", null));
         }
 
-        int token = authService.autenticar(request.getLogin(), request.getSenha());
+        Optional<AuthService.Autenticacao> autenticacao =
+                authService.autenticar(request.getLogin(), request.getSenha());
 
-        // 401 — credenciais inválidas
-        if (token == -1) {
+        if (autenticacao.isEmpty()) {
             return ResponseEntity.status(401)
                     .body(new LoginResponse(false, "Usuário ou senha incorretos.", null));
         }
 
-        // 200 — sucesso
+        // O app usa estes dados para bloquear edicao quando o usuario ja votou.
+        Optional<Voto> voto = votoRepository.findByUsuario(autenticacao.get().usuario());
+
         return ResponseEntity.ok(
-                new LoginResponse(true, "Login realizado com sucesso.", token));
+                new LoginResponse(
+                        true,
+                        "Login realizado com sucesso.",
+                        autenticacao.get().token(),
+                        voto.isPresent(),
+                        voto.map(Voto::getFilme).orElse(null),
+                        voto.map(Voto::getDiretor).orElse(null)));
     }
 }
